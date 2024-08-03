@@ -1,6 +1,7 @@
 import {h} from "preact"
 import {useState, useEffect} from "preact/hooks"
 import VoiceToText from "voice2text"
+import { Transcript } from "./Transcript";
 
 interface VoiceEvent extends CustomEvent {
     detail: {
@@ -12,9 +13,9 @@ interface VoiceEvent extends CustomEvent {
 const VOICE_EVENT_NAME = "voice"
 
 export function Voice() {
-    const [transcript, setTranscript] = useState<string>("")
-    const [partialTranscript, setPartialTranscript] = useState<string>("")
-    const [status, setStatus] = useState<string>("")
+    const [transcript, setTranscript] = useState("")
+    const [partialTranscript, setPartialTranscript] = useState("")
+    const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState<boolean>(false)
     const voice2text = new VoiceToText({
         converter: "vosk",
@@ -73,16 +74,9 @@ export function Voice() {
                 {isListening ? "Stop Listening" : "Start Listening"}
             </button>
             <p className="status">Status: {status}</p>
-            <div className="transcript-container">
-                Foo
-            </div>
-            <div className="transcript-container">
-                <h2 className="subtitle">Transcript:</h2>
-                <p className="transcript">{transcript}</p>
-                {partialTranscript && (
-                    <p className="partial-transcript">{partialTranscript}</p>
-                )}
-            </div>
+            <Transcript transcript={transcript} partialTranscript={partialTranscript} />
         </div>
     )
 }
+
+
