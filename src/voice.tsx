@@ -1,5 +1,4 @@
-// This file is no longer needed. Its functionality has been moved to the Voice component.
-import {h, Fragment} from "preact"
+import {h} from "preact"
 import {useState, useEffect} from "preact/hooks"
 import VoiceToText from "voice2text"
 
@@ -47,15 +46,16 @@ export function Voice() {
     }
 
     return (
-        <>
-            <h1>Voice Transcription</h1>
-            <button onClick={toggleListening}>
+        <div className="voice-transcription">
+            <h1 className="title">Voice Transcription</h1>
+            <button className={`toggle-button ${isListening ? "listening" : ""}`} onClick={toggleListening}>
                 {isListening ? "Stop Listening" : "Start Listening"}
             </button>
-            <p>Status: {status}</p>
-            <h2>Transcript:</h2>
-            <p>{transcript}</p>
-        </>
+            <p className="status">Status: {status}</p>
+            <div className="transcript-container">
+                <h2 className="subtitle">Transcript:</h2>
+                <p className="transcript">{transcript}</p>
+            </div>
+        </div>
     )
-
 }
