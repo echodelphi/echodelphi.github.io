@@ -1,5 +1,5 @@
 import {h} from "preact"
-import {useState, useEffect} from "preact/hooks"
+import {useState, useEffect, useRef} from "preact/hooks"
 import VoiceToText from "voice2text"
 
 export function Voice() {
@@ -7,9 +7,10 @@ export function Voice() {
     const [partialTranscript, setPartialTranscript] = useState("")
     const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState(false)
+    const voice2textRef = useRef<VoiceToText | null>(null)
 
     useEffect(() => {
-        const voice2text = new VoiceToText({
+        voice2textRef.current = new VoiceToText({
             converter: "vosk",
             language: "en",
             sampleRate: 16000,
@@ -30,23 +31,21 @@ export function Voice() {
 
         return () => {
             window.removeEventListener("voice", handleVoiceEvent as EventListener)
-            voice2text.stop()
+            if (voice2textRef.current) {
+                voice2textRef.current.stop()
+            }
         }
     }, [])
 
     const toggleListening = () => {
-        const voice2text = new VoiceToText({
-            converter: "vosk",
-            language: "en",
-            sampleRate: 16000,
-        })
-
-        if (isListening) {
-            voice2text.stop()
-        } else {
-            voice2text.start()
+        if (voice2textRef.current) {
+            if (isListening) {
+                voice2textRef.current.stop()
+            } else {
+                voice2textRef.current.start()
+            }
+            setIsListening(! isListening)
         }
-        setIsListening(! isListening)
     }
 
     return (
