@@ -1,6 +1,7 @@
 import {h, Fragment} from "preact"
 import {useState} from "preact/hooks"
 import "./app.css"
+import "./voice"
 
 export function App() {
     const [count, setCount] = useState(0);
