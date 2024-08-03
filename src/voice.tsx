@@ -82,6 +82,9 @@ export function Voice() {
             </button>
             <p className="status">Status: {status}</p>
             <div className="transcript-container">
+                Foo
+            </div>
+            <div className="transcript-container">
                 <h2 className="subtitle">Transcript:</h2>
                 <p className="transcript">{transcript}</p>
                 {partialTranscript && (
