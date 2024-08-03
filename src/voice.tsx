@@ -1,7 +1,9 @@
 import {h} from "preact"
-import {useState, useEffect, useRef} from "preact/hooks"
+import {useState, useEffect} from "preact/hooks"
 import VoiceToText from "voice2text"
 import {GeminiBox} from "./geminiBox"
+import {Transcript} from "./Transcript"
+
 interface VoiceEvent extends CustomEvent {
     detail: {
         type: "PARTIAL" | "FINAL" | "STATUS";
@@ -12,25 +14,17 @@ interface VoiceEvent extends CustomEvent {
 const VOICE_EVENT_NAME = "voice"
 
 export function Voice() {
-    const [transcript, setTranscript] = useState<string>("")
-    const [partialTranscript, setPartialTranscript] = useState<string>("")
-    const [status, setStatus] = useState<string>("")
+    const [transcript, setTranscript] = useState("")
+    const [partialTranscript, setPartialTranscript] = useState("")
+    const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState<boolean>(false)
-    const voice2textRef = useRef<VoiceToText>(null)
+    const voice2text = new VoiceToText({
+        converter: "vosk",
+        language: "en",
+        sampleRate: 16000,
+    })
 
     useEffect(() => {
-        try {
-            voice2textRef.current = new VoiceToText({
-                converter: "vosk",
-                language: "en",
-                sampleRate: 16000,
-            })
-        } catch (error) {
-            console.error("Failed to initialize VoiceToText:", error)
-            setStatus("Error: Failed to initialize voice recognition")
-            return
-        }
-
         const handleVoiceEvent = (e: VoiceEvent) => {
             switch (e.detail.type) {
                 case "PARTIAL":
@@ -50,19 +44,19 @@ export function Voice() {
 
         return () => {
             window.removeEventListener(VOICE_EVENT_NAME, handleVoiceEvent as EventListener)
-            if (voice2textRef.current) {
-                voice2textRef.current.stop()
+            if (voice2text) {
+                voice2text.stop()
             }
         }
     }, [])
 
     const toggleListening = () => {
-        if (voice2textRef.current) {
+        if (voice2text) {
             try {
                 if (isListening) {
-                    voice2textRef.current.stop()
+                    voice2text.stop()
                 } else {
-                    voice2textRef.current.start()
+                    voice2text.start()
                 }
                 setIsListening(! isListening)
             } catch (error) {
@@ -90,6 +84,8 @@ export function Voice() {
                 )}
                 <p className="transcript">{transcript}</p>
             </div>
+            <Transcript transcript={transcript} partialTranscript={partialTranscript} />
         </div>
     )
 }
+

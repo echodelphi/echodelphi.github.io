@@ -13,15 +13,16 @@ export function App() {
 
             <main className="main-content">
                 <Router>
-                    <Route path="/" component={Home} />
+                    <Route path="/" component={Voice} />
                     <Route path="/voice" component={Voice} />
+                    <Route path="/about" component={About} />
                 </Router>
             </main>
         </div>
     )
 }
 
-function Home() {
+function About() {
     return (
         <div className="home">
             <h1 className="title">EchoDelphi</h1>

@@ -32,6 +32,6 @@ export default defineConfig({
         },
     },
     optimizeDeps: {
-        exclude: ["vosk-worker"],
+        exclude: ["voice2text"],
     },
 })
