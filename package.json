@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@benchristel/taste": "0.5.0",
+    "@google/generative-ai": "^0.16.0",
     "preact": "^10.11.0",
     "voice2text": "^0.5.6",
     "vosk-browser": "^0.0.8"
@@ -32,6 +33,4 @@
     "smoke": "yarn vite preview --open",
     "ts": "yarn tsc --watch --noEmit"
   }
-
 }
-
