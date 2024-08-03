@@ -4,6 +4,7 @@ import VoiceToText from "voice2text"
 
 export function Voice() {
     const [transcript, setTranscript] = useState("")
+    const [partialTranscript, setPartialTranscript] = useState("")
     const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState(false)
 
@@ -15,8 +16,11 @@ export function Voice() {
         })
 
         const handleVoiceEvent = (e: CustomEvent) => {
-            if (e.detail.type === "PARTIAL" || e.detail.type === "FINAL") {
-                setTranscript(e.detail.text)
+            if (e.detail.type === "PARTIAL") {
+                setPartialTranscript(e.detail.text)
+            } else if (e.detail.type === "FINAL") {
+                setTranscript((prev) => prev + (prev ? " " : "") + e.detail.text)
+                setPartialTranscript("")
             } else if (e.detail.type === "STATUS") {
                 setStatus(e.detail.text)
             }
@@ -55,6 +59,9 @@ export function Voice() {
             <div className="transcript-container">
                 <h2 className="subtitle">Transcript:</h2>
                 <p className="transcript">{transcript}</p>
+                {partialTranscript && (
+                    <p className="partial-transcript">{partialTranscript}</p>
+                )}
             </div>
         </div>
     )

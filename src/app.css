@@ -1,25 +1,37 @@
+:root {
+  --primary-color: #8b4513;
+  --secondary-color: #f4a460;
+  --text-color: #333;
+  --background-color: #fff2d0;
+  --transcript-bg: #fffaf0;
+}
+
 html,
 body {
-  background: #fff2d0;
+  background: var(--background-color);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.8;
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+h1,
+h2 {
+  text-align: center;
+  color: var(--primary-color);
+  font-family: "Georgia", serif;
 }
 
 h1 {
-  text-align: center;
-}
-:root {
-  --primary-color: #4a90e2;
-  --secondary-color: #f5f5f5;
-  --text-color: #333;
-  --background-color: #ffffff;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-  color: var(--text-color);
-  background-color: var(--background-color);
-  margin: 0;
-  padding: 0;
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
 .app {
@@ -29,14 +41,14 @@ body {
 }
 
 .navbar {
-  background-color: var(--primary-color);
+  background-color: var(--secondary-color);
   padding: 1rem;
   display: flex;
   justify-content: space-around;
 }
 
 .nav-link {
-  color: white;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: bold;
   padding: 0.5rem 1rem;
@@ -45,7 +57,7 @@ body {
 }
 
 .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(139, 69, 19, 0.1);
 }
 
 .main-content {
@@ -71,35 +83,31 @@ body {
 
 .description {
   margin-bottom: 2rem;
+  color: var(--text-color);
 }
 
-.cta-button {
+.cta-button,
+.toggle-button {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--background-color);
   padding: 0.75rem 1.5rem;
   text-decoration: none;
   border-radius: 4px;
   font-weight: bold;
   transition: background-color 0.3s ease;
-}
-
-.cta-button:hover {
-  background-color: darken(var(--primary-color), 10%);
-}
-
-.toggle-button {
-  background-color: var(--primary-color);
-  color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
   font-size: 1rem;
-  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+}
+
+.cta-button:hover,
+.toggle-button:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 .toggle-button.listening {
-  background-color: #e74c3c;
+  background-color: #d2691e;
 }
 
 .status {
@@ -108,20 +116,39 @@ body {
 }
 
 .transcript-container {
-  background-color: var(--secondary-color);
-  padding: 1rem;
-  border-radius: 4px;
-  margin-top: 1rem;
+  background-color: var(--transcript-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .subtitle {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  font-family: "Georgia", serif;
+}
+
+.transcript,
+.partial-transcript {
+  white-space: pre-wrap;
+  text-align: left;
+  color: var(--text-color);
+  font-family: "Roboto Mono", monospace;
+  line-height: 1.6;
+  font-size: 1rem;
 }
 
 .transcript {
-  white-space: pre-wrap;
-  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.partial-transcript {
+  font-style: italic;
+  opacity: 0.7;
+  color: #666;
 }
