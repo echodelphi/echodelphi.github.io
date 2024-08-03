@@ -1,7 +1,7 @@
 import {h} from "preact"
 import {useState, useEffect, useRef} from "preact/hooks"
 import VoiceToText from "voice2text"
-
+import {GeminiBox} from "./geminiBox"
 interface VoiceEvent extends CustomEvent {
     detail: {
         type: "PARTIAL" | "FINAL" | "STATUS";
@@ -37,7 +37,7 @@ export function Voice() {
                     setPartialTranscript(e.detail.text)
                     break
                 case "FINAL":
-                    setTranscript((prev) => prev + (prev ? " " : "") + e.detail.text)
+                    setTranscript((prev) => e.detail.text + "\n" + prev + (prev ? " " : ""))
                     setPartialTranscript("")
                     break
                 case "STATUS":
@@ -81,12 +81,14 @@ export function Voice() {
                 {isListening ? "Stop Listening" : "Start Listening"}
             </button>
             <p className="status">Status: {status}</p>
+            <GeminiBox transcript={transcript} />
+
             <div className="transcript-container">
                 <h2 className="subtitle">Transcript:</h2>
-                <p className="transcript">{transcript}</p>
                 {partialTranscript && (
                     <p className="partial-transcript">{partialTranscript}</p>
                 )}
+                <p className="transcript">{transcript}</p>
             </div>
         </div>
     )

@@ -2,19 +2,21 @@ import {h} from "preact"
 import {useState, useEffect} from "preact/hooks"
 import runChat from "./gemini"
 
-export function GeminiBox() {
+export function GeminiBox(props: { transcript: string }) {
     const [inputText, setInputText] = useState("")
     const [outputText, setOutputText] = useState("")
     const [apiKey, setApiKey] = useState("")
-    const [gap, setGap] = useState(60000) // Default to 1 minute
+    const [gap, setGap] = useState(20000) // Default to 1 minute
 
     useEffect(() => {
         const timer = setInterval(() => {
             handleSubmit()
+            console.log("gap:" + gap)
+            console.log("props", props.transcript)
         }, gap)
 
         return () => clearInterval(timer)
-    }, [inputText, apiKey, gap])
+    }, [inputText, apiKey, gap, props.transcript])
 
     useEffect(() => {
         console.log("inputText", inputText)
@@ -42,8 +44,8 @@ export function GeminiBox() {
     const handleSubmit = async () => {
         console.log("handleSubmit", inputText, apiKey, gap)
         if (inputText && apiKey && gap) {
-            // const response = await runChat(inputText, apiKey);
-            setOutputText(inputText + " " + apiKey + " " + gap)
+            // const response = await runChat(props.transcript + "\n" + inputText, apiKey);
+            setOutputText(props.transcript)
         }
     }
 
