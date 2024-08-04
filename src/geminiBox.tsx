@@ -20,14 +20,8 @@ export function GeminiBox(props: { transcript: string, setOutputText: Function }
     }, [gap])
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            generateInference()
-        }, gapRef.current)
-        if (isOn) {
-            return () => clearInterval(timer)
-        } else {
-            clearInterval(timer)
-        }
+        const timer = setInterval(() => generateInference(), gapRef.current)
+        return  isOn ? () => clearInterval(timer) : clearInterval(timer)
     }, [isOn])
 
     useEffect(() => {
@@ -39,26 +33,19 @@ export function GeminiBox(props: { transcript: string, setOutputText: Function }
     }, [apiKey])
 
     const handleInputChange = (e: h.JSX.TargetedEvent<HTMLInputElement>) => {
-        const newInputText = e.currentTarget.value
-        setInputText(newInputText)
+        setInputText(e.currentTarget.value)
         setIsOn(false)
     }
 
     const handleApiKeyChange = (e: h.JSX.TargetedEvent<HTMLInputElement>) => {
-        const newApiKey = e.currentTarget.value
-        setApiKey(newApiKey)
+        setApiKey(e.currentTarget.value)
         setIsOn(false)
     }
 
     const handleIntervalChange = (e: h.JSX.TargetedEvent<HTMLInputElement>) => {
-        const newGap = parseInt(e.currentTarget.value) * 1000 // Convert seconds to milliseconds
-        setGap(newGap)
+        setGap((parseInt(e.currentTarget.value) * 1000))
         setIsOn(false)
-    }
-
-    const handleIsOn = () => {
-        setIsOn(! isOn)
-    }
+    }    
 
     const generateInference = async () => {
         console.log("handleSubmit", metaPrompt, apiKey, gap, isOn, transcriptRef.current)
@@ -97,7 +84,7 @@ export function GeminiBox(props: { transcript: string, setOutputText: Function }
                     className="modern-input"
                 />
             </div>
-            <button onClick={handleIsOn} className="modern-button">
+            <button onClick={() => setIsOn(!isOn)} className="modern-button">
                 {isOn ? "Turn Off" : "Turn On"}
         </button>
         </div>
