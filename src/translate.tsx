@@ -120,10 +120,10 @@ export function Translate() {
                     <option value="jpn_Jpan">Japanese</option>
                 </select>
             </div>
-            <p className="status">Status: {status}</p>
+            <p className="status">{status}</p>
             <div className="transcript-container">
                 <h2 className="subtitle">Translation:</h2>
-                <p className="translation-accumulated">{translatedTextAccumulated}</p>
+                <p className="transcript translation">{translatedTextAccumulated}</p>
             </div>
             <div className="transcript-container">
                 <h2 className="subtitle">Transcript:</h2>
