@@ -38,10 +38,6 @@ export function GeminiBox(props: { transcript: string }) {
         setApiKey(newApiKey)
     }
 
-    const handleIntervalChange = (e: h.JSX.TargetedEvent<HTMLInputElement>) => {
-        const newGap = parseInt(e.currentTarget.value) * 1000 // Convert seconds to milliseconds
-        setGap(newGap)
-    }
 
     const handleSubmit = async () => {
         console.log("handleSubmit", inputText, apiKey, gap, isOn)
@@ -73,7 +69,10 @@ export function GeminiBox(props: { transcript: string }) {
                 type="number"
                 placeholder="Input gap in seconds"
                 value={gap / 1000}
-                onInput={handleIntervalChange}
+                onInput={(e: h.JSX.TargetedEvent<HTMLInputElement>) => {
+                    setGap((parseInt(e.currentTarget.value) * 1000 // Convert seconds to milliseconds
+                    ))
+                }}
             />
             <button onClick={handleIsOn}>{isOn ? "Turn Off" : "Turn On"}</button>
             <textarea
