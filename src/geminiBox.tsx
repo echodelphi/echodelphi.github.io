@@ -81,7 +81,7 @@ export function GeminiBox(props: { transcript: string }) {
                 <input
                     type="text"
                     placeholder="Enter your message"
-                    value={inputText}
+                    value={metaPrompt}
                     onInput={handleInputChange}
                     className="modern-input"
                 />
