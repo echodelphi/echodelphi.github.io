@@ -15,6 +15,7 @@ const VOICE_EVENT_NAME = "voice"
 
 export function Voice() {
     const [transcript, setTranscript] = useState("")
+    const [transcriptReversed, setTranscriptReversed] = useState("")
     const [partialTranscript, setPartialTranscript] = useState("")
     const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState<boolean>(false)
@@ -31,7 +32,8 @@ export function Voice() {
                     setPartialTranscript(e.detail.text)
                     break
                 case "FINAL":
-                    setTranscript((prev) => e.detail.text + "\n" + prev + (prev ? " " : ""))
+                    setTranscriptReversed((prev) => e.detail.text + "\n" + prev)
+                    setTranscript((prev) => prev + "\n" + e.detail.text)
                     setPartialTranscript("")
                     break
                 case "STATUS":
@@ -82,9 +84,8 @@ export function Voice() {
                 {partialTranscript && (
                     <p className="partial-transcript">{partialTranscript}</p>
                 )}
-                <p className="transcript">{transcript}</p>
+                <p className="transcript">{transcriptReversed}</p>
             </div>
-            <Transcript transcript={transcript} partialTranscript={partialTranscript} />
         </div>
     )
 }

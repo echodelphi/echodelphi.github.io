@@ -7,8 +7,10 @@ export function GeminiBox(props: { transcript: string }) {
     const [outputText, setOutputText] = useState("")
     const [apiKey, setApiKey] = useState("")
     const [gap, setGap] = useState(20000) // Default to 1 minute
-
+    const [isOn, setIsOn] = useState(false)
     useEffect(() => {
+        console.log("setInterval", gap)
+
         const timer = setInterval(() => {
             handleSubmit()
             console.log("gap:" + gap)
@@ -16,7 +18,7 @@ export function GeminiBox(props: { transcript: string }) {
         }, gap)
 
         return () => clearInterval(timer)
-    }, [inputText, apiKey, gap, props.transcript])
+    }, [props.transcript, isOn])
 
     useEffect(() => {
         console.log("inputText", inputText)
@@ -42,13 +44,17 @@ export function GeminiBox(props: { transcript: string }) {
     }
 
     const handleSubmit = async () => {
-        console.log("handleSubmit", inputText, apiKey, gap)
-        if (inputText && apiKey && gap) {
+        console.log("handleSubmit", inputText, apiKey, gap, isOn)
+        if (inputText && apiKey && gap && isOn) {
             // const response = await runChat(props.transcript + "\n" + inputText, apiKey);
+            // setOutputText(response)
             setOutputText(props.transcript)
         }
     }
 
+    const handleIsOn = () => {
+        setIsOn(! isOn)
+    }
     return (
         <div>
             <input
@@ -69,7 +75,7 @@ export function GeminiBox(props: { transcript: string }) {
                 value={gap / 1000}
                 onInput={handleIntervalChange}
             />
-            <button onClick={handleSubmit}>Set</button>
+            <button onClick={handleIsOn}>{isOn ? "Turn Off" : "Turn On"}</button>
             <textarea
                 readOnly
                 placeholder="Output will appear here"
