@@ -104,16 +104,22 @@ export function Tabs() {
     return (
         <div className="voice-transcription">
             <h1 className="title">Voice Transcription and Translation</h1>
-            <button className={`toggle-button ${isListening ? "listening" : ""}`} onClick={toggleListening}>
-                {isListening ? "Stop Listening" : "Start Listening"}
-            </button>
-            <select value={targetLang} onChange={(e) => setTargetLang((e.target as HTMLSelectElement).value)}>
-                <option value="fra_Latn">French</option>
-                <option value="deu_Latn">German</option>
-                <option value="spa_Latn">Spanish</option>
-                <option value="zho_Hans">Chinese (Simplified)</option>
-                <option value="jpn_Jpan">Japanese</option>
-            </select>
+            <div className="controls">
+                <button className={`toggle-button ${isListening ? "listening" : ""}`} onClick={toggleListening}>
+                    {isListening ? "Stop Listening" : "Start Listening"}
+                </button>
+                <select
+                    className="language-select"
+                    value={targetLang}
+                    onChange={(e) => setTargetLang((e.target as HTMLSelectElement).value)}
+                >
+                    <option value="fra_Latn">French</option>
+                    <option value="deu_Latn">German</option>
+                    <option value="spa_Latn">Spanish</option>
+                    <option value="zho_Hans">Chinese (Simplified)</option>
+                    <option value="jpn_Jpan">Japanese</option>
+                </select>
+            </div>
             <p className="status">Status: {status}</p>
             <div className="transcript-container">
                 <h2 className="subtitle">Translation:</h2>
