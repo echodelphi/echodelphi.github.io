@@ -11,7 +11,9 @@ import {
 const MODEL_NAME: string = "gemini-1.5-pro"
 const API_KEY: string = "AIzaSyBODPD0qgF01nIW_XT4qcOUdSn3eQV1JAs"
 
-async function runChat(prompt: string, apiKey: string): Promise<string> {
+import {PitchAnalysis} from "./typechat"
+
+async function runChat(prompt: string, apiKey: string): Promise<PitchAnalysis> {
     const genAI: GoogleGenerativeAI = new GoogleGenerativeAI(apiKey)
     const model: GenerativeModel = genAI.getGenerativeModel({model: MODEL_NAME})
 
@@ -46,8 +48,12 @@ async function runChat(prompt: string, apiKey: string): Promise<string> {
 
     const result = await chat.sendMessage(prompt)
     const response = result.response
-    console.log(response.text())
-    return response.text()
+    const responseText = response.text()
+    console.log(responseText)
+
+    // Parse the response text into a PitchAnalysis object
+    const pitchAnalysis: PitchAnalysis = JSON.parse(responseText)
+    return pitchAnalysis
 }
 
 export default runChat

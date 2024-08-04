@@ -11,6 +11,7 @@ export function App() {
             <nav className="navbar">
                 <Link href="/" className="nav-link">Home</Link>
                 <Link href="/translate" className="nav-link">Translate</Link>
+                <Link href="/analysis" className="nav-link">Analysis</Link>
                 <Link href="/about" className="nav-link">About</Link>
                 <Link href="/analysis" className="nav-link">Analysis</Link>
             </nav>
@@ -19,6 +20,7 @@ export function App() {
                 <Router>
                     <Route path="/" component={Voice} />
                     <Route path="/translate" component={Translate} />
+                    <Route path="/analysis" component={Analysis} />
                     <Route path="/about" component={About} />
                     <Route path="/analysis" component={Analysis} />
                 </Router>
