@@ -2,12 +2,13 @@ import {h} from "preact"
 import {useState, useEffect, useRef} from "preact/hooks"
 import runChat from "./gemini"
 import "./geminiBox.css"
+import Markdown from 'react-markdown'
 
 export function GeminiBox(props: { transcript: string }) {
     const [metaPrompt, setInputText] = useState("Extract a TODO list from the provided transcript in Markdown.")
     const [outputText, setOutputText] = useState("")
     const [apiKey, setApiKey] = useState("AIzaSyAFlr_X8A308SRb8Gm3La9Y59ElQVUk0sY")
-    const [gap, setGap] = useState(5000)
+    const [gap, setGap] = useState(20000)
     const [isOn, setIsOn] = useState(false)
     const transcriptRef = useRef(props.transcript)
     const gapRef = useRef(gap)
@@ -22,7 +23,7 @@ export function GeminiBox(props: { transcript: string }) {
 
     useEffect(() => {
         const timer = setInterval(() => {
-            handleSubmit()
+            generateInference()
             console.log("gap:", gapRef.current)
             console.log("transcript:", transcriptRef.current)
             console.log("isOn:", isOn)
@@ -67,7 +68,7 @@ export function GeminiBox(props: { transcript: string }) {
         setIsOn(! isOn)
     }
 
-    const handleSubmit = async () => {
+    const generateInference = async () => {
         console.log("handleSubmit", metaPrompt, apiKey, gap, isOn, transcriptRef.current)
         if (metaPrompt && apiKey && gap && isOn) {
             const response = await runChat(transcriptRef.current + "\n" + metaPrompt, apiKey)
@@ -107,12 +108,7 @@ export function GeminiBox(props: { transcript: string }) {
             <button onClick={handleIsOn} className="modern-button">
                 {isOn ? "Turn Off" : "Turn On"}
             </button>
-            <textarea
-                readOnly
-                placeholder="Output will appear here"
-                value={outputText}
-                className="modern-textarea"
-            />
+            <Markdown>{outputText}</Markdown>
         </div>
     )
 }
