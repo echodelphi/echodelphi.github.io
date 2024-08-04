@@ -72,7 +72,7 @@ export function Voice() {
                     log("Received transcript: " + transcription.transcript)
                     setPartialTranscript(transcription.transcript)
                     if (data.is_final) {
-                        setFullTranscript((prev) => (prev ? prev + "\n" : "") + transcription.transcript)
+                        setFullTranscript((prev) => transcription.transcript + "\n" + (prev ? prev : ""))
                         setPartialTranscript("")
                     }
                 }
