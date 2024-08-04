@@ -35,6 +35,6 @@
     "setup": "yarn install; yarn run husky install",
     "smoke": "yarn vite preview --open",
     "ts": "yarn tsc --watch --noEmit",
-    "deploy": "touch ./output_folder/.nojekyll && gh-pages -d output_folder -t true"
+    "deploy": "yarn build && touch ./output_folder/.nojekyll && gh-pages -d output_folder -t true"
   }
 }
