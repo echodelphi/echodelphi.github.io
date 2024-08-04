@@ -9,6 +9,7 @@ export function App() {
             <nav className="navbar">
                 <Link href="/" className="nav-link">Home</Link>
                 <Link href="/voice" className="nav-link">Voice Transcription</Link>
+                <Link href="/about" className="nav-link">About</Link>
             </nav>
 
             <main className="main-content">
