@@ -2,20 +2,21 @@ import {h} from "preact"
 import {Link, Route, Router} from "preact-router"
 import "./app.css"
 import {Voice} from "./voice"
+import {Tabs} from "./tabs"
 
 export function App() {
     return (
         <div className="app">
             <nav className="navbar">
                 <Link href="/" className="nav-link">Home</Link>
-                <Link href="/voice" className="nav-link">Voice Transcription</Link>
+                <Link href="/tabs" className="nav-link">Tabs</Link>
                 <Link href="/about" className="nav-link">About</Link>
             </nav>
 
             <main className="main-content">
                 <Router>
                     <Route path="/" component={Voice} />
-                    <Route path="/voice" component={Voice} />
+                    <Route path="/tabs" component={Tabs} />
                     <Route path="/about" component={About} />
                 </Router>
             </main>
@@ -33,7 +34,7 @@ function About() {
                 the meeting participants to see a summary of their meeting so far. That way they can address missing items they
                 still need to discuss.
             </p>
-            <Link href="/voice" className="cta-button">Start Transcribing</Link>
+            <Link href="/tabs" className="cta-button">Start Transcribing</Link>
         </div>
     )
 }

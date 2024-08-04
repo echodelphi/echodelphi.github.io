@@ -12,7 +12,7 @@ interface VoiceEvent extends CustomEvent {
 
 const VOICE_EVENT_NAME = "voice"
 
-export function Voice() {
+export function Tabs() {
     const [transcript, setTranscript] = useState("")
     const [transcriptReversed, setTranscriptReversed] = useState("")
     const [partialTranscript, setPartialTranscript] = useState("")
@@ -77,8 +77,6 @@ export function Voice() {
                 {isListening ? "Stop Listening" : "Start Listening"}
             </button>
             <p className="status">Status: {status}</p>
-            <GeminiBox transcript={transcript} />
-
             <div className="transcript-container">
                 <h2 className="subtitle">Transcript:</h2>
                 {partialTranscript && (
