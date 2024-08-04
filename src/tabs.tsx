@@ -29,7 +29,7 @@ export function Tabs() {
             if (event.data.status === "update") {
                 setStatus(`Translating: ${event.data.output}`)
             } else if (event.data.status === "complete") {
-                setTranscript((prev) => prev + "\nTranslated: " + event.data.output[0].translation_text)
+                setTranslatedText(event.data.output[0].translation_text)
                 setIsTranslating(false)
             } else {
                 setStatus(event.data.text)
