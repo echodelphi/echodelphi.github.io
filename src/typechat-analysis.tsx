@@ -1,4 +1,4 @@
-import {createJsonTranslator, createLanguageModel} from "typechat"
+import {createJsonTranslator, createOpenAILanguageModel} from "typechat"
 import {createTypeScriptJsonValidator} from "typechat/ts"
 
 export interface PitchAnalysis {
@@ -23,7 +23,7 @@ const schema = `
  }`
 
 export async function createPitchAnalysisTranslator(apiKey: string) {
-    const model = createLanguageModel(apiKey)
+    const model = createOpenAILanguageModel(apiKey, "gpt-4o")
     const validator = createTypeScriptJsonValidator<PitchAnalysis>(schema, "PitchAnalysis")
     return createJsonTranslator(model, validator)
 }

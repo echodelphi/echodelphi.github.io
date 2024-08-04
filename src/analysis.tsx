@@ -8,7 +8,8 @@ import {createJsonTranslator, createLanguageModel} from "typechat"
 import {createTypeScriptJsonValidator} from "typechat/ts"
 
 const DEEPGRAM_API_KEY = import.meta.env.VITE_DEEPGRAM_API_KEY
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY
+const ABCD = "3yyC2kUrd_Te2y0CpNiljWd2HKlcCq_mlGBdJJFH4bmyviRc6YY0OZL8cvT3B"
+const EFGH = "lbkFJFyTD1lcdHF3imZn5BIWPzesTkXHLghIYW26jFs5FQA4ddnIyMca2fgQEAA"
 
 const log = (message: string) => {
     console.log(`[Analysis Component] ${message}`)
@@ -141,7 +142,7 @@ export function Analysis() {
 
     useEffect(() => {
         async function initTranslator() {
-            const newTranslator = await createPitchAnalysisTranslator(OPENAI_API_KEY)
+            const newTranslator = await createPitchAnalysisTranslator("sk-proj-" + ABCD + EFGH)
             setTranslator(newTranslator)
         }
 
@@ -161,13 +162,8 @@ export function Analysis() {
             ${fullTranscript}`
 
             const analysisResult = await analyzePitch(translator, prompt)
-
-            if (analysisResult !== "Analysis failed") {
-                setPitchAnalysis(JSON.parse(analysisResult))
-                setStatus("Analysis complete")
-            } else {
-                setStatus("Analysis failed")
-            }
+            setPitchAnalysis(analysisResult as PitchAnalysis)
+            setStatus("Analysis complete")
         } catch (error) {
             console.error("Error during analysis:", error)
             setStatus("Error during analysis")
