@@ -3,6 +3,7 @@ import {Link, Route, Router} from "preact-router"
 import "./app.css"
 import {Voice} from "./voice"
 import {Translate} from "./translate"
+import {Analysis} from "./analysis"
 
 export function App() {
     return (
@@ -11,6 +12,7 @@ export function App() {
                 <Link href="/" className="nav-link">Home</Link>
                 <Link href="/translate" className="nav-link">Translate</Link>
                 <Link href="/about" className="nav-link">About</Link>
+                <Link href="/analysis" className="nav-link">Analysis</Link>
             </nav>
 
             <main className="main-content">
@@ -18,6 +20,7 @@ export function App() {
                     <Route path="/" component={Voice} />
                     <Route path="/translate" component={Translate} />
                     <Route path="/about" component={About} />
+                    <Route path="/analysis" component={Analysis} />
                 </Router>
             </main>
         </div>
