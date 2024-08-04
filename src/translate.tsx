@@ -11,7 +11,7 @@ interface VoiceEvent extends CustomEvent {
 
 const VOICE_EVENT_NAME = "voice"
 
-export function Tabs() {
+export function Translate() {
     const [transcript, setTranscript] = useState("")
     const [transcriptReversed, setTranscriptReversed] = useState("")
     const [partialTranscript, setPartialTranscript] = useState("")
