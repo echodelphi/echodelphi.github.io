@@ -2,6 +2,7 @@ import {h} from "preact"
 import {useState, useEffect, useRef} from "preact/hooks"
 import VoiceToText from "voice2text"
 import {GeminiBox} from "./geminiBox"
+import Markdown from 'react-markdown'
 
 interface VoiceEvent extends CustomEvent {
     detail: {
@@ -18,6 +19,8 @@ export function Voice() {
     const [partialTranscript, setPartialTranscript] = useState("")
     const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState<boolean>(false)
+    const [outputText, setOutputText] = useState("## This is where the response will display.\n\n*Please wait patiently.*")
+    
     const voice2text = useRef<VoiceToText | null>(null)
 
     useEffect(() => {
@@ -77,10 +80,12 @@ export function Voice() {
                 {isListening ? "Stop Listening" : "Start Listening"}
             </button>
             <p className="status">Status: {status}</p>
-            <GeminiBox transcript={transcript} />
-
+            <GeminiBox transcript={transcript} setOutputText={setOutputText} />
             <div className="transcript-container">
-                <h2 className="subtitle">Transcript:</h2>
+                <Markdown>{outputText}</Markdown>
+            </div>
+            <div className="transcript-container">
+                <h2 className="subtitle">Transcript</h2>
                 {partialTranscript && (
                     <p className="partial-transcript">{partialTranscript}</p>
                 )}

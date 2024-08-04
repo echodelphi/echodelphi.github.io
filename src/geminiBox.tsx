@@ -2,11 +2,9 @@ import {h} from "preact"
 import {useState, useEffect, useRef} from "preact/hooks"
 import runChat from "./gemini"
 import "./geminiBox.css"
-import Markdown from 'react-markdown'
 
-export function GeminiBox(props: { transcript: string }) {
+export function GeminiBox(props: { transcript: string, setOutputText: Function }) {
     const [metaPrompt, setInputText] = useState("Extract a TODO list from the provided transcript in Markdown.")
-    const [outputText, setOutputText] = useState("")
     const [apiKey, setApiKey] = useState("AIzaSyAFlr_X8A308SRb8Gm3La9Y59ElQVUk0sY")
     const [gap, setGap] = useState(20000)
     const [isOn, setIsOn] = useState(false)
@@ -24,17 +22,11 @@ export function GeminiBox(props: { transcript: string }) {
     useEffect(() => {
         const timer = setInterval(() => {
             generateInference()
-            console.log("gap:", gapRef.current)
-            console.log("transcript:", transcriptRef.current)
-            console.log("isOn:", isOn)
         }, gapRef.current)
-        console.log("timer created", timer, transcriptRef.current)
         if (isOn) {
-            console.log("timer started", timer, transcriptRef.current)
             return () => clearInterval(timer)
         } else {
             clearInterval(timer)
-            console.log("timer cleared", timer, transcriptRef.current)
         }
     }, [isOn])
 
@@ -72,12 +64,12 @@ export function GeminiBox(props: { transcript: string }) {
         console.log("handleSubmit", metaPrompt, apiKey, gap, isOn, transcriptRef.current)
         if (metaPrompt && apiKey && gap && isOn) {
             const response = await runChat(transcriptRef.current + "\n" + metaPrompt, apiKey)
-            setOutputText(response)
+            props.setOutputText(response)
         }
     }
 
     return (
-        <div className="gemini-box">
+        isOn || <div className="gemini-box">
             <div className="input-group">
                 <input
                     type="text"
@@ -107,8 +99,7 @@ export function GeminiBox(props: { transcript: string }) {
             </div>
             <button onClick={handleIsOn} className="modern-button">
                 {isOn ? "Turn Off" : "Turn On"}
-            </button>
-            <Markdown>{outputText}</Markdown>
+        </button>
         </div>
     )
 }
