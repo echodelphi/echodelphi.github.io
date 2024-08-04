@@ -4,7 +4,7 @@ import runChat from "./gemini"
 import "./geminiBox.css"
 
 export function GeminiBox(props: { transcript: string }) {
-    const [metaPrompt, setInputText] = useState("Extract a TODO list from the provided transcript.")
+    const [metaPrompt, setInputText] = useState("Extract a TODO list from the provided transcript in Markdown.")
     const [outputText, setOutputText] = useState("")
     const [apiKey, setApiKey] = useState("AIzaSyAFlr_X8A308SRb8Gm3La9Y59ElQVUk0sY")
     const [gap, setGap] = useState(5000)
