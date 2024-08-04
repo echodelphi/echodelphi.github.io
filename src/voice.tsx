@@ -1,5 +1,5 @@
 import {h} from "preact"
-import {useState, useEffect} from "preact/hooks"
+import {useState, useEffect, useRef} from "preact/hooks"
 import VoiceToText from "voice2text"
 import {GeminiBox} from "./geminiBox"
 import {Transcript} from "./Transcript"
@@ -18,13 +18,14 @@ export function Voice() {
     const [partialTranscript, setPartialTranscript] = useState("")
     const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState<boolean>(false)
-    const voice2text = new VoiceToText({
-        converter: "vosk",
-        language: "en",
-        sampleRate: 16000,
-    })
+    const voice2text = useRef<VoiceToText | null>(null)
 
     useEffect(() => {
+        voice2text.current = new VoiceToText({
+            converter: "vosk",
+            language: "en",
+            sampleRate: 16000,
+        })
         const handleVoiceEvent = (e: VoiceEvent) => {
             switch (e.detail.type) {
                 case "PARTIAL":
@@ -44,19 +45,19 @@ export function Voice() {
 
         return () => {
             window.removeEventListener(VOICE_EVENT_NAME, handleVoiceEvent as EventListener)
-            if (voice2text) {
-                voice2text.stop()
+            if (voice2text.current) {
+                voice2text.current.stop()
             }
         }
     }, [])
 
-    const toggleListening = () => {
-        if (voice2text) {
+    const toggleListening = async () => {
+        if (voice2text.current) {
             try {
                 if (isListening) {
-                    voice2text.stop()
+                    voice2text.current.stop()
                 } else {
-                    voice2text.start()
+                    await voice2text.current.start()
                 }
                 setIsListening(! isListening)
             } catch (error) {
@@ -88,4 +89,3 @@ export function Voice() {
         </div>
     )
 }
-
