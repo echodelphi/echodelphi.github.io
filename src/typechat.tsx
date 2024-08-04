@@ -12,7 +12,6 @@ export default async function typechatRequest(apiKey: string, request: string) {
     console.log("Request: ", request)
 
     const model = createOpenAILanguageModel(apiKey, "gpt-4o-mini")
-    // const model = createOpenAILanguageModel("sk-proj-lzwcGkIHY-yUyAx-sxUWsmsA9ciUOTvLDO1IobctuQ1kYvNSjaChDfFZQLT3kFJcTvgAl7eXTIll91pXZtCn0k84F3uxDOxiA1tifUFgnVciibQaDCtWbLCAA", "gpt-4o-mini");
 
     const schema = 'export interface SentimentResponse { sentiment: "negative" | "neutral" | "positive";}'
     const validator = createTypeScriptJsonValidator<SentimentResponse>(schema, "SentimentResponse")
