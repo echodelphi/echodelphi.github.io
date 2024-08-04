@@ -7,11 +7,11 @@ export interface SentimentResponse {
 }
 
 // Process  requests interactively or from the input file specified on the command line
-export default async function typechatRequest(request: string) {
+export default async function typechatRequest(apiKey: string, request: string) {
     request = request ? request : "This has bad quality."
     console.log("Request: ", request)
 
-    const model = createOpenAILanguageModel("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", "gpt-4o-mini")
+    const model = createOpenAILanguageModel(apiKey, "gpt-4o-mini")
     // const model = createOpenAILanguageModel("sk-proj-lzwcGkIHY-yUyAx-sxUWsmsA9ciUOTvLDO1IobctuQ1kYvNSjaChDfFZQLT3kFJcTvgAl7eXTIll91pXZtCn0k84F3uxDOxiA1tifUFgnVciibQaDCtWbLCAA", "gpt-4o-mini");
 
     const schema = 'export interface SentimentResponse { sentiment: "negative" | "neutral" | "positive";}'
