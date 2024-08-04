@@ -1,10 +1,6 @@
 import {h} from "preact"
-import {useState, useEffect, useRef} from "preact/hooks"
+import {useEffect, useRef, useState} from "preact/hooks"
 import VoiceToText from "voice2text"
-import {GeminiBox} from "./geminiBox"
-import {env, pipeline, Pipeline, TranslationPipeline} from "@xenova/transformers"
-
-env.allowLocalModels = false
 
 interface VoiceEvent extends CustomEvent {
     detail: {
@@ -21,23 +17,32 @@ export function Tabs() {
     const [partialTranscript, setPartialTranscript] = useState("")
     const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState<boolean>(false)
-    const [translator, setTranslator] = useState<Pipeline | null>(null)
     const [targetLang, setTargetLang] = useState<string>("fra_Latn")
+    const [isTranslating, setIsTranslating] = useState(false)
     const voice2text = useRef<VoiceToText | null>(null)
+    const worker = useRef<Worker | null>(null)
 
     useEffect(() => {
-        const initTranslator = async () => {
-            const translatorPipeline = await pipeline("translation", "Xenova/nllb-200-distilled-600M")
-            setTranslator(translatorPipeline)
+        worker.current = new Worker(new URL("./worker.js", import.meta.url), {type: "module"})
+
+        worker.current.onmessage = (event) => {
+            if (event.data.status === "update") {
+                setStatus(`Translating: ${event.data.output}`)
+            } else if (event.data.status === "complete") {
+                setTranscript((prev) => prev + "\nTranslated: " + event.data.output[0].translation_text)
+                setIsTranslating(false)
+            } else {
+                setStatus(event.data.text)
+            }
         }
-        initTranslator()
 
         voice2text.current = new VoiceToText({
             converter: "vosk",
             language: "en",
             sampleRate: 16000,
         })
-        const handleVoiceEvent = (e: VoiceEvent) => {
+
+        const handleVoiceEvent = async (e: VoiceEvent) => {
             switch (e.detail.type) {
                 case "PARTIAL":
                     setPartialTranscript(e.detail.text)
@@ -46,17 +51,12 @@ export function Tabs() {
                     setTranscriptReversed((prev) => e.detail.text + "\n" + prev)
                     setTranscript((prev) => prev + "\n" + e.detail.text)
                     setPartialTranscript("")
-                    if (translator && targetLang) {
-                        translator(e.detail.text, {
-                            generate_kwargs: {
-                                src_lang: "eng_Latn",
-                                tgt_lang: targetLang,
-                            },
-                        }).then((result) => {
-                            setTranscript((prev) => prev + "\nTranslated: " + result[0].translation_text)
-                        }).catch((error) => {
-                            console.error("Translation error:", error)
-                            setStatus("Error: Failed to translate text")
+                    if (worker.current && ! isTranslating) {
+                        setIsTranslating(true)
+                        worker.current.postMessage({
+                            text: e.detail.text,
+                            tgt_lang: targetLang,
+                            src_lang: "eng_Latn",
                         })
                     }
                     break
@@ -73,8 +73,11 @@ export function Tabs() {
             if (voice2text.current) {
                 voice2text.current.stop()
             }
+            if (worker.current) {
+                worker.current.terminate()
+            }
         }
-    }, [])
+    }, [targetLang])
 
     const toggleListening = async () => {
         if (voice2text.current) {
