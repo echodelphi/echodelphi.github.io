@@ -1,27 +1,24 @@
 import {h} from "preact"
 import {useEffect, useRef, useState} from "preact/hooks"
-import VoiceToText from "voice2text"
+import {createClient, LiveTranscriptionEvents} from "@deepgram/sdk"
 
-interface VoiceEvent extends CustomEvent {
-    detail: {
-        type: "PARTIAL" | "FINAL" | "STATUS";
-        text: string;
-    };
+const DEEPGRAM_API_KEY = import.meta.env.VITE_DEEPGRAM_API_KEY
+
+const log = (message: string) => {
+    console.log(`[Translate Component] ${message}`)
 }
 
-const VOICE_EVENT_NAME = "voice"
-
 export function Translate() {
-    const [transcript, setTranscript] = useState("")
-    const [transcriptReversed, setTranscriptReversed] = useState("")
+    const [fullTranscript, setFullTranscript] = useState("")
     const [partialTranscript, setPartialTranscript] = useState("")
     const [translatedText, setTranslatedText] = useState("")
     const [translatedTextAccumulated, setTranslatedTextAccumulated] = useState("")
-    const [status, setStatus] = useState("")
-    const [isListening, setIsListening] = useState<boolean>(false)
+    const [status, setStatus] = useState("Initializing...")
+    const [isListening, setIsListening] = useState(false)
     const [targetLang, setTargetLang] = useState<string>("fra_Latn")
     const [isTranslating, setIsTranslating] = useState(false)
-    const voice2text = useRef<VoiceToText | null>(null)
+    const deepgramConnection = useRef<any>(null)
+    const mediaRecorder = useRef<MediaRecorder | null>(null)
     const worker = useRef<Worker | null>(null)
 
     useEffect(() => {
@@ -40,64 +37,91 @@ export function Translate() {
             }
         }
 
-        voice2text.current = new VoiceToText({
-            converter: "vosk",
-            language: "en",
-            sampleRate: 16000,
-        })
-
-        const handleVoiceEvent = async (e: VoiceEvent) => {
-            switch (e.detail.type) {
-                case "PARTIAL":
-                    setPartialTranscript(e.detail.text)
-                    break
-                case "FINAL":
-                    setTranscriptReversed((prev) => e.detail.text + "\n" + prev)
-                    setTranscript((prev) => prev + "\n" + e.detail.text)
-                    setPartialTranscript("")
-                    if (worker.current && ! isTranslating) {
-                        setIsTranslating(true)
-                        worker.current.postMessage({
-                            text: e.detail.text,
-                            tgt_lang: targetLang,
-                            src_lang: "eng_Latn",
-                        })
-                    }
-                    break
-                case "STATUS":
-                    setStatus(e.detail.text)
-                    break
-            }
-        }
-
-        window.addEventListener(VOICE_EVENT_NAME, handleVoiceEvent as EventListener)
-
         return () => {
-            window.removeEventListener(VOICE_EVENT_NAME, handleVoiceEvent as EventListener)
-            if (voice2text.current) {
-                voice2text.current.stop()
-            }
+            stopRecognition()
             if (worker.current) {
                 worker.current.terminate()
             }
         }
     }, [targetLang])
 
-    const toggleListening = async () => {
-        if (voice2text.current) {
-            try {
-                if (isListening) {
-                    voice2text.current.stop()
-                } else {
-                    await voice2text.current.start()
+    const stopRecognition = () => {
+        if (deepgramConnection.current) {
+            deepgramConnection.current.finish()
+            deepgramConnection.current = null
+        }
+        if (mediaRecorder.current && mediaRecorder.current.state !== "inactive") {
+            mediaRecorder.current.stop()
+        }
+        setIsListening(false)
+        setStatus("Stopped")
+    }
+
+    const startRecognition = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({audio: true})
+            mediaRecorder.current = new MediaRecorder(stream)
+
+            const deepgram = createClient(DEEPGRAM_API_KEY)
+
+            deepgramConnection.current = deepgram.listen.live({
+                language: "en-US",
+                smart_format: true,
+                model: "nova-2",
+            })
+
+            deepgramConnection.current.addListener(LiveTranscriptionEvents.Open, () => {
+                log("Deepgram connection opened")
+                setStatus("Connected to Deepgram")
+
+                mediaRecorder.current!.start(250)
+                mediaRecorder.current!.addEventListener("dataavailable", (event) => {
+                    if (deepgramConnection.current) {
+                        deepgramConnection.current.send(event.data)
+                    }
+                })
+            })
+            deepgramConnection.current.addListener(LiveTranscriptionEvents.Close, () => {
+                setStatus("Disconnected from Deepgram")
+                stopRecognition()
+            })
+            deepgramConnection.current.addListener(LiveTranscriptionEvents.Transcript, (data: any) => {
+                const transcription = data.channel.alternatives[0]
+                if (transcription.transcript) {
+                    log("Received transcript: " + transcription.transcript)
+                    setPartialTranscript(transcription.transcript)
+                    if (data.is_final) {
+                        setFullTranscript((prev) => (prev ? prev + "\n" : "") + transcription.transcript)
+                        setPartialTranscript("")
+                        if (worker.current && ! isTranslating) {
+                            setIsTranslating(true)
+                            worker.current.postMessage({
+                                text: transcription.transcript,
+                                tgt_lang: targetLang,
+                                src_lang: "eng_Latn",
+                            })
+                        }
+                    }
                 }
-                setIsListening(! isListening)
-            } catch (error) {
-                console.error("Error toggling listening state:", error)
-                setStatus("Error: Failed to toggle listening state")
-            }
+            })
+
+            deepgramConnection.current.addListener(LiveTranscriptionEvents.Error, (error: any) => {
+                console.error("Deepgram error:", error)
+                setStatus("Error: Deepgram encountered an issue")
+            })
+            setIsListening(true)
+            setStatus("Starting...")
+        } catch (error) {
+            console.error("Error starting recognition:", error)
+            setStatus("Error: Failed to start recognition")
+        }
+    }
+
+    const toggleListening = async () => {
+        if (isListening) {
+            stopRecognition()
         } else {
-            setStatus("Error: Voice recognition not initialized")
+            await startRecognition()
         }
     }
 
@@ -130,7 +154,7 @@ export function Translate() {
                 {partialTranscript && (
                     <p className="partial-transcript">{partialTranscript}</p>
                 )}
-                <p className="transcript">{transcriptReversed}</p>
+                <p className="transcript">{fullTranscript}</p>
             </div>
         </div>
     )
