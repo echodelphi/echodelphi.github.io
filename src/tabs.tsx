@@ -15,6 +15,8 @@ export function Tabs() {
     const [transcript, setTranscript] = useState("")
     const [transcriptReversed, setTranscriptReversed] = useState("")
     const [partialTranscript, setPartialTranscript] = useState("")
+    const [translatedText, setTranslatedText] = useState("")
+    const [translatedTextAccumulated, setTranslatedTextAccumulated] = useState("")
     const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState<boolean>(false)
     const [targetLang, setTargetLang] = useState<string>("fra_Latn")
@@ -27,9 +29,11 @@ export function Tabs() {
 
         worker.current.onmessage = (event) => {
             if (event.data.status === "update") {
-                setStatus(`Translating: ${event.data.output}`)
+                setStatus(`Translation: ${event.data.output}`)
             } else if (event.data.status === "complete") {
-                setTranslatedText(event.data.output[0].translation_text)
+                const newTranslation = event.data.output[0].translation_text
+                setTranslatedText(newTranslation)
+                setTranslatedTextAccumulated((prev) => newTranslation + "\n\n" + prev)
                 setIsTranslating(false)
             } else {
                 setStatus(event.data.text)
@@ -111,6 +115,10 @@ export function Tabs() {
                 <option value="jpn_Jpan">Japanese</option>
             </select>
             <p className="status">Status: {status}</p>
+            <div className="transcript-container">
+                <h2 className="subtitle">Translation:</h2>
+                <p className="translation-accumulated">{translatedTextAccumulated}</p>
+            </div>
             <div className="transcript-container">
                 <h2 className="subtitle">Transcript:</h2>
                 {partialTranscript && (
