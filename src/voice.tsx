@@ -1,75 +1,99 @@
 import {h} from "preact"
 import {useState, useEffect, useRef} from "preact/hooks"
-import VoiceToText from "voice2text"
+import {createClient} from "@deepgram/sdk"
 import {GeminiBox} from "./geminiBox"
 import Markdown from "react-markdown"
 
-interface VoiceEvent extends CustomEvent {
-    detail: {
-        type: "PARTIAL" | "FINAL" | "STATUS";
-        text: string;
-    };
-}
-
-const VOICE_EVENT_NAME = "voice"
+const DEEPGRAM_API_KEY = import.meta.env.VITE_DEEPGRAM_API_KEY
 
 export function Voice() {
     const [transcript, setTranscript] = useState("")
     const [transcriptReversed, setTranscriptReversed] = useState("")
     const [partialTranscript, setPartialTranscript] = useState("")
-    const [status, setStatus] = useState("")
-    const [isListening, setIsListening] = useState<boolean>(false)
+    const [status, setStatus] = useState("Initializing...")
+    const [isListening, setIsListening] = useState(false)
     const [outputText, setOutputText] = useState("## This is where the response will display.\n\n*Please wait patiently.*")
 
-    const voice2text = useRef<VoiceToText | null>(null)
+    const deepgramLive = useRef(null)
+    const mediaRecorder = useRef(null)
 
     useEffect(() => {
-        voice2text.current = new VoiceToText({
-            converter: "vosk",
-            language: "en",
-            sampleRate: 16000,
-        })
-        const handleVoiceEvent = (e: VoiceEvent) => {
-            switch (e.detail.type) {
-                case "PARTIAL":
-                    setPartialTranscript(e.detail.text)
-                    break
-                case "FINAL":
-                    setTranscriptReversed((prev) => e.detail.text + "\n" + prev)
-                    setTranscript((prev) => prev + "\n" + e.detail.text)
-                    setPartialTranscript("")
-                    break
-                case "STATUS":
-                    setStatus(e.detail.text)
-                    break
-            }
+        let deepgram
+        try {
+            deepgram = createClient(DEEPGRAM_API_KEY)
+        } catch (error) {
+            console.error("Error creating Deepgram client:", error)
+            setStatus("Error: Failed to initialize Deepgram client")
+            return
         }
 
-        window.addEventListener(VOICE_EVENT_NAME, handleVoiceEvent as EventListener)
+        const initializeDeepgram = () => {
+            deepgramLive.current = deepgram.listen.live({
+                language: "en-US",
+                smart_format: true,
+                model: "nova-2",
+            })
+
+            deepgramLive.current.addListener("open", () => {
+                console.log("Connection opened.")
+                setStatus("Ready to listen")
+            })
+
+            deepgramLive.current.addListener("close", () => {
+                console.log("Connection closed.")
+                setStatus("Connection closed")
+            })
+
+            deepgramLive.current.addListener("error", (error) => {
+                console.error("Deepgram error:", error)
+                setStatus("Error: Deepgram connection issue")
+            })
+
+            deepgramLive.current.addListener("transcriptReceived", (message) => {
+                const data = JSON.parse(message)
+                const transcription = data.channel.alternatives[0].transcript
+                if (data.is_final) {
+                    setTranscriptReversed((prev) => transcription + "\n" + prev)
+                    setTranscript((prev) => prev + "\n" + transcription)
+                    setPartialTranscript("")
+                } else {
+                    setPartialTranscript(transcription)
+                }
+            })
+        }
+
+        initializeDeepgram()
 
         return () => {
-            window.removeEventListener(VOICE_EVENT_NAME, handleVoiceEvent as EventListener)
-            if (voice2text.current) {
-                voice2text.current.stop()
+            if (deepgramLive.current) {
+                deepgramLive.current.finish()
             }
         }
     }, [])
 
     const toggleListening = async () => {
-        if (voice2text.current) {
-            try {
-                if (isListening) {
-                    voice2text.current.stop()
-                } else {
-                    await voice2text.current.start()
-                }
-                setIsListening(! isListening)
-            } catch (error) {
-                console.error("Error toggling listening state:", error)
-                setStatus("Error: Failed to toggle listening state")
+        if (isListening) {
+            if (mediaRecorder.current && mediaRecorder.current.state === "recording") {
+                mediaRecorder.current.stop()
             }
+            setIsListening(false)
+            setStatus("Stopped listening")
         } else {
-            setStatus("Error: Voice recognition not initialized")
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({audio: true})
+                mediaRecorder.current = new MediaRecorder(stream)
+                mediaRecorder.current.addEventListener("dataavailable", async (event) => {
+                    if (event.data.size > 0 && deepgramLive.current && deepgramLive.current.getReadyState() === 1) {
+                        deepgramLive.current.send(event.data)
+                    }
+                })
+                mediaRecorder.current.start(250)
+                setIsListening(true)
+                setStatus("Listening...")
+            } catch (error) {
+                console.error("Error accessing microphone:", error)
+                setStatus("Error: Failed to access microphone")
+            }
         }
     }
 
