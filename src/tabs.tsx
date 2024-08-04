@@ -21,7 +21,7 @@ export function Tabs() {
     const [partialTranscript, setPartialTranscript] = useState("")
     const [status, setStatus] = useState("")
     const [isListening, setIsListening] = useState<boolean>(false)
-    const [translator, setTranslator] = useState<TranslationPipeline | null>(null)
+    const [translator, setTranslator] = useState<Pipeline | null>(null)
     const [targetLang, setTargetLang] = useState<string>("fra_Latn")
     const voice2text = useRef<VoiceToText | null>(null)
 
@@ -48,8 +48,10 @@ export function Tabs() {
                     setPartialTranscript("")
                     if (translator && targetLang) {
                         translator(e.detail.text, {
-                            src_lang: "eng_Latn",
-                            tgt_lang: targetLang,
+                            generate_kwargs: {
+                                src_lang: "eng_Latn",
+                                tgt_lang: targetLang,
+                            },
                         }).then((result) => {
                             setTranscript((prev) => prev + "\nTranslated: " + result[0].translation_text)
                         }).catch((error) => {
