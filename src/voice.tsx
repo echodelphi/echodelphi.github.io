@@ -105,7 +105,7 @@ export function Voice() {
                 {isListening ? "Stop Listening" : "Start Listening"}
             </button>
             <p className="status">Status: {status}</p>
-            {/* <GeminiBox transcript={fullTranscript} setOutputText={setOutputText} isListening={isListening} />*/}
+            <GeminiBox transcript={fullTranscript} setOutputText={setOutputText} isListening={isListening} />
             <div className="transcript-container">
                 <Markdown>{outputText}</Markdown>
             </div>
