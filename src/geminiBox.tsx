@@ -3,7 +3,7 @@ import {useState, useEffect, useRef} from "preact/hooks"
 import runChat from "./gemini"
 import "./geminiBox.css"
 
-export function GeminiBox(props: { transcript: string; setOutputText: Function; isListening: boolean }) {
+export function GeminiBox(props: {transcript: string; setOutputText: Function; isListening: boolean}) {
     const [metaPrompt, setInputText] = useState("Extract a TODO list from the provided transcript in Markdown.")
     const [apiKey, setApiKey] = useState("AIzaSyAFlr_X8A308SRb8Gm3La9Y59ElQVUk0sY")
     const [gap, setGap] = useState(20000)
