@@ -103,17 +103,6 @@ export function Analysis() {
                     if (data.is_final) {
                         setFullTranscript((prev) => (prev ? prev + "\n" : "") + transcription.transcript)
                         setPartialTranscript("")
-                        // Here you would typically analyze the transcript and update pitchAnalysis
-                        // For now, we'll just set some placeholder text
-                        setPitchAnalysis({
-                            market: "Market",
-                            product: "Product",
-                            businessModel: "Business model",
-                            businessType: "Business type",
-                            competitiveAdvantage: "Competitive advantage",
-                            goToMarket: "Go to market strategy",
-                            summary: "Summary of the pitch",
-                        })
                     }
                 }
             })
