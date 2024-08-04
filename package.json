@@ -21,6 +21,7 @@
   "dependencies": {
     "@benchristel/taste": "0.5.0",
     "@google/generative-ai": "^0.16.0",
+    "@xenova/transformers": "^2.17.2",
     "preact": "^10.11.0",
     "preact-router": "^4.1.2",
     "voice2text": "^0.5.6",

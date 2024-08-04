@@ -2,7 +2,6 @@ import {h} from "preact"
 import {useState, useEffect, useRef} from "preact/hooks"
 import VoiceToText from "voice2text"
 import {GeminiBox} from "./geminiBox"
-import {Transcript} from "./Transcript"
 
 interface VoiceEvent extends CustomEvent {
     detail: {

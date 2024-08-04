@@ -1,6 +1,7 @@
 import {h} from "preact"
 import {useState, useEffect, useRef} from "preact/hooks"
 import runChat from "./gemini"
+import "./geminiBox.css"
 
 export function GeminiBox(props: { transcript: string }) {
     const [metaPrompt, setInputText] = useState("Extract a TODO list from the provided transcript.")
@@ -75,32 +76,43 @@ export function GeminiBox(props: { transcript: string }) {
     }
 
     return (
-        <div>
-            <input
-                type="text"
-                placeholder="Enter your message"
-                value={metaPrompt}
-                onInput={handleInputChange}
-            />
-            <input
-                type="text"
-                placeholder="Enter your API key"
-                value={apiKey}
-                onInput={handleApiKeyChange}
-            />
-            <input
-                type="number"
-                placeholder="Input gap in seconds"
-                value={gap / 1000}
-                onInput={handleIntervalChange}
-            />
-            <button onClick={handleIsOn}>{isOn ? "Turn Off" : "Turn On"}</button>
+        <div className="gemini-box">
+            <div className="input-group">
+                <input
+                    type="text"
+                    placeholder="Enter your message"
+                    value={inputText}
+                    onInput={handleInputChange}
+                    className="modern-input"
+                />
+            </div>
+            <div className="input-group">
+                <input
+                    type="text"
+                    placeholder="Enter your API key"
+                    value={apiKey}
+                    onInput={handleApiKeyChange}
+                    className="modern-input"
+                />
+            </div>
+            <div className="input-group">
+                <input
+                    type="number"
+                    placeholder="Input gap in seconds"
+                    value={gap / 1000}
+                    onInput={handleIntervalChange}
+                    className="modern-input"
+                />
+            </div>
+            <button onClick={handleIsOn} className="modern-button">
+                {isOn ? "Turn Off" : "Turn On"}
+            </button>
             <textarea
                 readOnly
                 placeholder="Output will appear here"
                 value={outputText}
-            >
-            </textarea>
+                className="modern-textarea"
+            />
         </div>
     )
 }
