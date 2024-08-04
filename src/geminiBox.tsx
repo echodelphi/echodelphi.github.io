@@ -3,10 +3,10 @@ import {useState, useEffect, useRef} from "preact/hooks"
 import runChat from "./gemini"
 
 export function GeminiBox(props: { transcript: string }) {
-    const [inputText, setInputText] = useState("")
+    const [metaPrompt, setInputText] = useState("Extract a TODO list from the provided transcript.")
     const [outputText, setOutputText] = useState("")
-    const [apiKey, setApiKey] = useState("")
-    const [gap, setGap] = useState(20000)
+    const [apiKey, setApiKey] = useState("AIzaSyAFlr_X8A308SRb8Gm3La9Y59ElQVUk0sY")
+    const [gap, setGap] = useState(5000)
     const [isOn, setIsOn] = useState(false)
     const transcriptRef = useRef(props.transcript)
     const gapRef = useRef(gap)
@@ -37,8 +37,8 @@ export function GeminiBox(props: { transcript: string }) {
     }, [isOn])
 
     useEffect(() => {
-        console.log("inputText", inputText)
-    }, [inputText])
+        console.log("inputText", metaPrompt)
+    }, [metaPrompt])
 
     useEffect(() => {
         console.log("apiKey", apiKey)
@@ -67,9 +67,9 @@ export function GeminiBox(props: { transcript: string }) {
     }
 
     const handleSubmit = async () => {
-        console.log("handleSubmit", inputText, apiKey, gap, isOn, transcriptRef.current)
-        if (inputText && apiKey && gap && isOn) {
-            const response = await runChat(transcriptRef.current + "\n" + inputText, apiKey)
+        console.log("handleSubmit", metaPrompt, apiKey, gap, isOn, transcriptRef.current)
+        if (metaPrompt && apiKey && gap && isOn) {
+            const response = await runChat(transcriptRef.current + "\n" + metaPrompt, apiKey)
             setOutputText(response)
         }
     }
@@ -79,7 +79,7 @@ export function GeminiBox(props: { transcript: string }) {
             <input
                 type="text"
                 placeholder="Enter your message"
-                value={inputText}
+                value={metaPrompt}
                 onInput={handleInputChange}
             />
             <input
