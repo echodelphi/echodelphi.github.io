@@ -1,3 +1,6 @@
+.progress-bar {
+  width: 75%
+}
 .gemini-box {
   display: flex;
   flex-direction: column;
